@@ -1,0 +1,10 @@
+-------------RESULTS---------------
+--- BASIC ---
+Elapsed appending: 1.510074 seconds
+Elapsed removing: 0.977468 seconds
+
+--- FAST ---
+Elapsed appending: 0.475906 seconds
+Elapsed removing: 0.328665 seconds
+
+TODO: beschreiben

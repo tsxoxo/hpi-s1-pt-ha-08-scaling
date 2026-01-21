@@ -7,16 +7,17 @@
 
 #include <stddef.h>
 
+#define MIN_CAPACITY 4
+
 typedef struct ArrayList {
   int *contents;
-  int capacity;
-  int occupied; // this might become handy later, maybe we will allocate more
-                // capacity than we need for some reason
+  size_t capacity;
+  size_t occupied; // this might become handy later, maybe we will allocate more
+                   // capacity than we need for some reason
 } ArrayList;
 
 ArrayList *make_list();
 
-// QUESTION: Why does my LSP complain 'unknown type name size_t'?
 int list_get(ArrayList *list, size_t index);
 
 #endif
