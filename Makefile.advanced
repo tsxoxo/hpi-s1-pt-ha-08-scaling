@@ -1,0 +1,63 @@
+SHELL = /bin/bash
+
+CC ?= clang
+# Tip: override the compiler like `make CC=gcc` or `make CFLAGS='-O0 -g -Wall'`
+CFLAGS ?= -O2 -Wall -Wextra -Wpedantic -std=c11
+LDFLAGS ?=
+
+# Output binary names
+MVP_BIN = mvp.out
+RELEASE_BIN = release.out
+
+# Source files for each program
+MVP_SRC = mvp.c arraylistio_core.c arraylistio_basic.c
+RELEASE_SRC = release.c arraylistio_core.c arraylistio_basic.c arraylistio_fast.c
+
+# Object files are created automatically from the source lists
+MVP_OBJ = $(MVP_SRC:.c=.o)
+RELEASE_OBJ = $(RELEASE_SRC:.c=.o)
+
+# Default target builds both programs
+all: mvp release
+
+# Build only the MVP program
+mvp: $(MVP_BIN)
+
+# Build only the release program
+release: $(RELEASE_BIN)
+
+# Link the MVP binary from object files
+$(MVP_BIN): $(MVP_OBJ)
+	$(CC) $(CFLAGS) $(MVP_OBJ) -o $@ $(LDFLAGS)
+
+# Link the release binary from object files
+$(RELEASE_BIN): $(RELEASE_OBJ)
+	$(CC) $(CFLAGS) $(RELEASE_OBJ) -o $@ $(LDFLAGS)
+
+# Compile each .c into a .o
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Convenience targets to build with gcc
+mvp-gcc: CC = gcc
+mvp-gcc: mvp
+
+release-gcc: CC = gcc
+release-gcc: release
+
+# Run the MVP binary
+mvp-run: mvp
+	./$(MVP_BIN)
+
+# Run the release binary
+release-run: release
+	./$(RELEASE_BIN)
+
+# Remove build artifacts
+clean:
+	rm -f $(MVP_BIN) $(RELEASE_BIN) *.o
+
+# .PHONY marks targets that are not files. Without it, a file named "clean"
+# (or "mvp", etc.) would make Make think the target is already up to date and
+# skip the recipe. With .PHONY, Make always runs those recipes when requested.
+.PHONY: all mvp release mvp-gcc release-gcc mvp-run release-run clean
