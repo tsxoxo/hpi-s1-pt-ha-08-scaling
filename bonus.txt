@@ -1,0 +1,54 @@
+Growth strategies in dynamic arrays in popular languages.
+
+Bei Python, C++ und JavaScript ist dieses Detail nicht nur vor uns Programmierern versteckt, 
+die language-specs kuemmern sich nicht um die Details der Implementierung -- das machen die
+entsprechenden Engines (CPython, V8, usw.).
+Allerdings gibt die C++ reference Zeitkriterien fuer Operationen vor.
+
+====== PYTHON ======
+Hier reden wir von lists und Cpython.
+Source: https://github.com/python/cpython/blob/main/Objects/listobject.c#L104
+
+Aus obiger Quelle:
+ /* This over-allocates proportional to the list size, making room
+     * for additional growth.  The over-allocation is mild, but is
+     * enough to give linear-time amortized behavior over a long
+     * sequence of appends() in the presence of a poorly-performing
+     * system realloc().
+     * Add padding to make the allocated size multiple of 4.
+     * The growth pattern is:  0, 4, 8, 16, 24, 32, 40, 52, 64, 76, ...
+     * Note: new_allocated won't overflow because the largest possible value
+     *       is PY_SSIZE_T_MAX * (9 / 8) + 6 which always fits in a size_t.
+     */
+    new_allocated = ((size_t)newsize + (newsize >> 3) + 6) & ~(size_t)3;
+
+====== C++ ======
+std::vector
+
+Source: https://en.cppreference.com/w/cpp/container/vector.html
+
+Die Referenz gibt Kriterien vor, laesst aber die Implementation frei:
+    The complexity (efficiency) of common operations on vectors is as follows:
+
+    Random access - constant 𝓞(1).
+    Insertion or removal of elements at the end - amortized constant 𝓞(1).
+    Insertion or removal of elements - linear in the distance to the end of the vector 𝓞(n).
+
+====== JavaScript ======
+V8 Engine.
+Schwer, genaue Angaben zu finden.
+
+Laut einer Quelle geht es so:
+      "V8 (Chrome/Node.js) uses a tiered approach:
+
+      For small arrays (length ≤ 1024): Double the capacity (growth factor = 2x).
+      For large arrays (length > 1024): Grow by 50% (growth factor = 1.5x)."
+
+          Quelle: https://www.javaspring.net/blog/how-are-the-javascript-arrays-internally-resizing/
+
+Allerdings konnte ich lediglich das im V8 Quellcode finden:
+      namespace growable_fixed_array
+      ...
+      // Growth rate is analog to JSObject::NewElementsCapacity:
+      // new_capacity = (current_capacity + (current_capacity >> 1)) + 16.
+       this.capacity = this.capacity + (this.capacity >> 1) + 16;
