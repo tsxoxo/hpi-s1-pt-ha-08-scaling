@@ -7,4 +7,11 @@ Elapsed removing: 0.977468 seconds
 Elapsed appending: 0.475906 seconds
 Elapsed removing: 0.328665 seconds
 
-TODO: beschreiben
+----------------------------------
+
+Kommentar:
+
+Man sieht eine deutliche Verkuerzung der Laufzeiten, um einen vergleichbaren Faktor von ca. 3.
+Eine Verkuerzung war zu erwarten, da die 'fast' Version die Anzahl der `realloc` calls deutlich
+reduziert. Dies gilt insbesondere fuer diesen Benchmark, der die Array-Liste linear vergroessert
+bzw. verkleinert.

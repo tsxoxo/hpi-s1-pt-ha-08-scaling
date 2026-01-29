@@ -1,0 +1,64 @@
+========== 1. BIG_NUMBER ==========
+Zum Vergleich:
+
+(Original)
+-------BIG_NUMBER = 100000000------
+--- BASIC ---
+Elapsed appending: 1.510074 seconds
+Elapsed removing: 0.977468 seconds
+
+--- FAST ---
+Elapsed appending: 0.475906 seconds
+Elapsed removing: 0.328665 seconds
+
+---------BIG_NUMBER = 1000---------
+--- BASIC ---
+Elapsed appending: 0.000066 seconds
+Elapsed removing: 0.000033 seconds
+
+--- FAST ---
+Elapsed appending: 0.000041 seconds
+Elapsed removing: 0.000024 seconds
+-----------------------------------
+
+Je mehr Iterationen, desto deutlicher das Ergebnis. Das ist zu erwarten, denn die Einsparung
+passiert in diesem Benchmark eben fast jede Iteration: in der basic Version wird `realloc` in 
+jeder Wiederholung aufgerufen -- in der fast Version nur manchmal.
+
+
+======= 2. Remove Schleife =======
+
+Mit BIG_NUMBER = 1000
+
+---------BIG_NUMBER / 2 -> 0-------
+--- BASIC ---
+Elapsed appending: 0.000031 seconds
+Elapsed removing: 0.000081 seconds
+
+--- FAST ---
+Elapsed appending: 0.000055 seconds
+Elapsed removing: 0.000090 seconds
+-----------------------------------
+
+Mit groesseren Werten explodiert die Zeit fuer die Remove Schleife--mit dem Originalwert wird auch die fast Version in mehreren Minuten nicht fertig.
+Vermutung: der Unterschied ist, dass wir nicht mehr das letzte Element aus dem Array loeschen, sondern eins in der Mitte. 
+Das bedeutet, dass `memmove` jede Iteration das halbe Array kopieren muss. Wir erwarten also dass die Zunahme der Laufzeit proportional zur Laenge
+des Arrays ist. Und da diese Laenge in diesem Benchmark von BIG_NUMBER abhaengt, ist die Zunahme entsprechend gross.
+
+
+
+======= 3. Remove Schleife =======
+Ausgehend von BIG_NUMBER = 100.000.000
+
+Die allgemeine Formel lautet:
+    Max size of list.contents in MB = max number of elements * sizeof(*list.contents) / 10^6
+
+Fuer die basic Version, auf meinem System:
+    BASIC: Max size of list.contents in MB = BIG_NUMBER * 4 / 10^6 = 400 MB
+
+---> Die Liste wird in der append Schleife immer um 1 Element erweitert, bis zum Maximum.
+
+Bei der fast Version waechst die Liste in 2-er Potenzen. Die groesste Zweierpotenz < BIG_NUMBER = 67108864 = 2^26.
+Das heisst, die Liste verdoppelt sich an der Stelle das letzte Mal und waechst damit ueber BIG_NUMBER hinaus:
+    FAST: Max size of list.contents in MB = 2 * 2^26 * 4 / 10^6 ~~ 537 MB
+    

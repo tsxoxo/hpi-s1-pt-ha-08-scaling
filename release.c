@@ -16,7 +16,12 @@ int main(void) {
     return 1;
   }
 
-  int BIG_NUMBER = 100000000;
+  // og
+  // int BIG_NUMBER = 100000000;
+  // med
+  // int BIG_NUMBER = 1000000;
+  // smol
+  int BIG_NUMBER = 1000;
 
   // How to measure performance in C?
   // https://stackoverflow.com/a/5249129/10917436
@@ -40,7 +45,10 @@ int main(void) {
   // }
 
   tic = clock();
-  for (int i = BIG_NUMBER - 1; i >= BIG_NUMBER / 2; i--) {
+  // og
+  // for (int i = BIG_NUMBER - 1; i >= BIG_NUMBER / 2; i--) {
+  // slo
+  for (int i = BIG_NUMBER / 2; i >= 0; i--) {
     if (mode == 1) {
       list_remove(list, i, &_dummy);
     } else {

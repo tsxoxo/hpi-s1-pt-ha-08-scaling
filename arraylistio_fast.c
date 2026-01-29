@@ -44,6 +44,9 @@ int fast_list_append(ArrayList *list, int elem) {
   return 0;
 }
 
+// Use C-style function signature allowing proper error handling.
+// Return value describes failure/success
+// Data gets send back via *out
 int fast_list_remove(ArrayList *list, size_t index, int *out) {
   int result_resize;
   if (index >= list->occupied) {
@@ -57,7 +60,7 @@ int fast_list_remove(ArrayList *list, size_t index, int *out) {
   // write removed value
   *out = list->contents[index];
   // Plug the hole
-  memmove(&list->contents[index], &list->contents[index + 1],
+  memmove(list->contents + index, list->contents + index + 1,
           (list->occupied - index - 1) * sizeof(*list->contents));
   list->occupied--;
   // resize when list is half empty
